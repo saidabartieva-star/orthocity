@@ -45,6 +45,16 @@
                     items: [
                         { id: 104, name: 'Корректор осанки', price: 1200, image: '🧘', isMarked: true }
                     ]
+                },
+                {
+                    id: '145',
+                    date: '15.03.2026 14:20',
+                    status: 'Возвращён',
+                    total: 3200,
+                    shop: 'Махачкала',
+                    items: [
+                        { id: 105, name: 'Подушка ортопедическая', price: 3200, image: '☁️', isMarked: false }
+                    ]
                 }
             ]
         };
@@ -76,12 +86,12 @@
                     <aside class="w-64 shrink-0">
                         <div class="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
                             <nav class="space-y-1 text-gray-600">
-                                <div class="flex items-center gap-3 px-4 py-3"><i data-lucide="user" class="w-4 h-4"></i> Профиль</div>
-                                <div class="flex items-center gap-3 px-4 py-3 text-[#4B73E5] bg-blue-50 font-bold rounded-lg">
+                                <div class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 rounded-lg"><i data-lucide="user" class="w-4 h-4"></i> Профиль</div>
+                                <div class="flex items-center gap-3 px-4 py-3 text-[#4B73E5] bg-blue-50 font-bold rounded-lg cursor-pointer">
                                     <i data-lucide="shopping-bag" class="w-4 h-4"></i> Заказы
                                 </div>
-                                <div class="flex items-center gap-3 px-4 py-3"><i data-lucide="heart" class="w-4 h-4"></i> Избранное</div>
-                                <div class="flex items-center gap-3 px-4 py-3"><i data-lucide="settings" class="w-4 h-4"></i> Настройки</div>
+                                <div class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 rounded-lg"><i data-lucide="heart" class="w-4 h-4"></i> Избранное</div>
+                                <div class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 rounded-lg"><i data-lucide="settings" class="w-4 h-4"></i> Настройки</div>
                             </nav>
                         </div>
                     </aside>
@@ -122,7 +132,7 @@
                         </thead>
                         <tbody class="divide-y divide-gray-100">
                             ${state.orders.map(order => `
-                                <tr class="text-sm">
+                                <tr class="text-sm hover:bg-gray-50/30 transition-colors">
                                     <td class="px-6 py-6 font-bold">${order.id}</td>
                                     <td class="px-6 py-6 text-gray-500">${order.date}</td>
                                     <td class="px-6 py-6 font-black">${order.total.toLocaleString()} ₽</td>
@@ -132,9 +142,15 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-6 text-center">
-                                        <button onclick="startReturn('${order.id}')" class="text-[#4B73E5] font-black border border-blue-100 bg-blue-50 px-3 py-1.5 rounded uppercase text-[10px]">
-                                            Вернуть товар
-                                        </button>
+                                        ${order.status === 'Доставлен' ? `
+                                            <button onclick="startReturn('${order.id}')" class="text-[#4B73E5] font-black border border-blue-100 bg-blue-50 px-3 py-1.5 rounded uppercase text-[10px] hover:bg-[#4B73E5] hover:text-white transition-all">
+                                                Вернуть товар
+                                            </button>
+                                        ` : order.status === 'Возвращён' ? `
+                                            <span class="text-gray-400 text-[10px] font-bold uppercase">Завершен</span>
+                                        ` : `
+                                            <button class="text-gray-400 font-bold text-[10px] uppercase cursor-default">В обработке</button>
+                                        `}
                                     </td>
                                 </tr>
                             `).join('')}
@@ -207,7 +223,7 @@
                     </div>
                     <h3 class="text-3xl font-black uppercase mb-4">Заявка принята</h3>
                     <p class="text-gray-500 mb-8 font-medium">Статус заказа будет изменен на «Запрошен возврат» после синхронизации с 1С.</p>
-                    <button onclick="location.reload()" class="px-10 py-4 bg-[#4B73E5] text-white rounded-xl font-black uppercase tracking-widest">К списку заказов</button>
+                    <button onclick="setView('list')" class="px-10 py-4 bg-[#4B73E5] text-white rounded-xl font-black uppercase tracking-widest">К списку заказов</button>
                 </div>
             `;
         }
@@ -230,6 +246,7 @@
         function getStatusClass(s) {
             if (s === 'Доставлен') return 'text-green-600 bg-green-50';
             if (s === 'Запрошен возврат') return 'text-orange-600 bg-orange-50';
+            if (s === 'Возвращён') return 'text-gray-500 bg-gray-100';
             return 'text-blue-600 bg-blue-50';
         }
 
